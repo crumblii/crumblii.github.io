@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crumbli — Logo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: hsl(48,33%,93%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 48px; }
+    .variants { display: flex; flex-direction: column; gap: 48px; align-items: center; }
+    .variant-row { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .variant-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; color: #999; }
+    .logo-box { border-radius: 20px; padding: 36px 48px; display: inline-flex; align-items: center; justify-content: center; }
+    .logo-box.light { background: hsl(48,33%,97%); border: 1px solid hsl(40,15%,88%); }
+    .logo-box.dark  { background: hsl(0,0%,9%); }
+    .logo-box.white { background: #fff; border: 1px solid hsl(40,15%,88%); }
+    .icon-row { display: flex; gap: 20px; align-items: center; }
+    .icon-box { border-radius: 16px; padding: 18px; display: inline-flex; align-items: center; justify-content: center; }
+    .icon-box.light { background: hsl(48,33%,97%); border: 1px solid hsl(40,15%,88%); }
+    .icon-box.dark  { background: hsl(0,0%,9%); }
+    #measure { position: absolute; top: -9999px; visibility: hidden; }
+  </style>
+</head>
+<body>
+  <canvas id="measure" width="800" height="120"></canvas>
+  <div class="variants">
+    <div class="variant-row"><span class="variant-label">Light</span><div class="logo-box light" id="wrap-light"></div></div>
+    <div class="variant-row"><span class="variant-label">Dark</span><div class="logo-box dark" id="wrap-dark"></div></div>
+    <div class="variant-row"><span class="variant-label">White</span><div class="logo-box white" id="wrap-white"></div></div>
+    <div class="variant-row">
+      <span class="variant-label">Icon Mark</span>
+      <div class="icon-row">
+        <div class="icon-box light" id="icon-light"></div>
+        <div class="icon-box dark"  id="icon-dark"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+  document.fonts.ready.then(build);
+  function build() {
+    var canvas=document.getElementById('measure'),ctx=canvas.getContext('2d');
+    var FS=72,TX=10,BY=78;
+    ctx.font='600 '+FS+'px "Playfair Display",Georgia,serif';
+    var wB=ctx.measureText('Crumbl').width,iW=ctx.measureText('i').width,tW=ctx.measureText('Crumbli').width;
+    var asc=ctx.measureText('Crumbli').actualBoundingBoxAscent||FS*.74;
+    var iCX=TX+wB+iW*.48,iCY=BY-asc*.83,W=Math.ceil(tW+TX*2+44),H=100;
+    document.getElementById('wrap-light').innerHTML=wm(W,H,TX,BY,FS,iCX,iCY,'#171717','hsl(48,33%,97%)');
+    document.getElementById('wrap-dark').innerHTML =wm(W,H,TX,BY,FS,iCX,iCY,'hsl(40,20%,95%)','hsl(0,0%,9%)');
+    document.getElementById('wrap-white').innerHTML=wm(W,H,TX,BY,FS,iCX,iCY,'#171717','#ffffff');
+    document.getElementById('icon-light').innerHTML=icon(48,48,'hsl(48,33%,97%)');
+    document.getElementById('icon-dark').innerHTML =icon(48,48,'hsl(0,0%,9%)');
+  }
+  function cp(cx,cy,r){return['M',cx,cy-r,'C',cx+r*.55,cy-r,cx+r,cy-r*.55,cx+r*.88,cy-r*.15,'L',cx+r*1.12,cy-r*.28,'L',cx+r*.82,cy+r*.08,'L',cx+r*1.08,cy+r*.32,'L',cx+r*.84,cy+r*.52,'C',cx+r*.9,cy+r*.75,cx+r*.55,cy+r,cx,cy+r,'C',cx-r*.6,cy+r,cx-r,cy+r*.55,cx-r,cy,'C',cx-r,cy-r*.55,cx-r*.6,cy-r,cx,cy-r,'Z'].join(' ');}
+  function cg(cx,cy,r,bg){
+    var cr='#C8884A',ch='#3E1E0A',sh='#E2AD72',s='';
+    s+='<ellipse cx="'+(cx+1)+'" cy="'+(cy+1.5)+'" rx="'+(r*.95)+'" ry="'+(r*.8)+'" fill="#000" opacity="0.08"/>';
+    s+='<path d="'+cp(cx,cy,r)+'" fill="'+cr+'"/>';
+    s+='<ellipse cx="'+(cx-r*.22)+'" cy="'+(cy-r*.2)+'" rx="'+(r*.52)+'" ry="'+(r*.38)+'" fill="'+sh+'" opacity="0.5"/>';
+    [[cx-r*.12,cy+r*.2,2,1.5],[cx+r*.28,cy-r*.18,1.6,1.2],[cx-r*.3,cy-r*.2,1.3,1]].forEach(function(c){s+='<ellipse cx="'+c[0]+'" cy="'+c[1]+'" rx="'+c[2]+'" ry="'+c[3]+'" fill="'+ch+'" opacity="0.82"/>';});
+    [[r+6,-5,4.5,-18,'p',1],[r+13,-9,3.2,12,'p',.95],[r+21,-13,2.4,-22,'p',.85],[r+29,-16,1.6,0,'d',.75],[r+36,-18,1,0,'d',.65],[r+9,6,3,20,'p',.8],[r+16,10,1.8,0,'d',.65]].forEach(function(o){
+      var bx=cx+o[0],by=cy+o[1],sz=o[2],rot=o[3],op=o[5];
+      if(o[4]==='d'){s+='<circle cx="'+bx+'" cy="'+by+'" r="'+sz+'" fill="'+cr+'" opacity="'+op+'"/>';}
+      else{var p=[[bx-sz*.7,by+sz*.1],[bx+sz*.4,by-sz*.8],[bx+sz*.8,by+sz*.3],[bx-sz*.1,by+sz*.9]].map(function(q){return q.join(',');}).join(' ');s+='<polygon points="'+p+'" fill="'+cr+'" opacity="'+op+'" transform="rotate('+rot+','+bx+','+by+')"\/>';}
+    });
+    return s;
+  }
+  function wm(w,h,tx,ty,fs,cx,cy,tc,bg){
+    var r=8.5;
+    return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">'
+      +'<text font-family="\'Playfair Display\',Georgia,serif" font-size="'+fs+'" font-weight="600" fill="'+tc+'" x="'+tx+'" y="'+ty+'" letter-spacing="-0.8">Crumbli</text>'
+      +'<rect x="'+(cx-r-3)+'" y="'+(cy-r-4)+'" width="'+(r*2+6)+'" height="'+(r*2+6)+'" fill="'+bg+'"/>'
+      +cg(cx,cy,r,bg)+'</svg>';
+  }
+  function icon(w,h,bg){var cx=w/2,cy=h/2-2,r=10;return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg">'+cg(cx,cy,r,bg)+'</svg>';}
+  </script>
+</body>
+</html>
