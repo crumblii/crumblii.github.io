@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crumbli — Receipt Management, Simplified</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        hsl(48, 33%, 97%);
+      --card:      hsl(0, 0%, 100%);
+      --secondary: hsl(40, 20%, 94%);
+      --fg:        hsl(0, 0%, 9%);
+      --muted:     hsl(0, 0%, 45%);
+      --border:    hsl(40, 15%, 90%);
+      --accent:    hsl(42, 65%, 55%);
+    }
+    html { -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; font-size: 16px; line-height: 1.6; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+    h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+      background: rgba(250,247,242,0.8); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--fg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .nav-icon svg { width: 16px; height: 16px; color: var(--bg); }
+    .nav-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; letter-spacing: -0.2px; }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-ghost { font-size: 14px; font-weight: 500; color: var(--muted); padding: 8px 16px; border: none; background: transparent; transition: color .2s; text-decoration: none; }
+    .btn-ghost:hover { color: var(--fg); }
+    .btn-pill { font-size: 14px; font-weight: 500; background: var(--fg); color: var(--bg); padding: 10px 20px; border-radius: 100px; border: none; transition: background .2s; text-decoration: none; }
+    .btn-pill:hover { background: hsl(0,0%,18%); }
+
+    /* Hero */
+    .hero { padding: 128px 24px 80px; text-align: center; }
+    .hero-inner { max-width: 800px; margin: 0 auto; animation: slideUp .6s ease-out; }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(56px, 9vw, 96px); font-weight: 600;
+      letter-spacing: -3px; line-height: 1.02; margin-bottom: 32px;
+    }
+    .hero h1 span { color: var(--muted); }
+    .hero-sub {
+      font-size: 18px; color: var(--muted); max-width: 560px;
+      margin: 0 auto 48px; line-height: 1.65;
+    }
+    .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; animation: slideUp .6s ease-out .15s both; }
+    .btn-hero-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--fg); color: var(--bg); font-size: 15px; font-weight: 500;
+      padding: 14px 32px; border-radius: 100px; border: none; transition: background .2s;
+    }
+    .btn-hero-primary:hover { background: hsl(0,0%,18%); }
+    .btn-hero-primary svg { width: 16px; height: 16px; transition: transform .2s; }
+    .btn-hero-primary:hover svg { transform: translateX(2px); }
+    .btn-hero-secondary {
+      display: inline-flex; align-items: center;
+      background: transparent; color: var(--muted); font-size: 15px; font-weight: 500;
+      padding: 14px 32px; border-radius: 100px; border: 1px solid var(--border);
+      transition: border-color .2s, color .2s;
+    }
+    .btn-hero-secondary:hover { border-color: hsl(40,15%,72%); color: var(--fg); }
+
+    /* Divider */
+    .divider { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+    .divider-line { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); }
+
+    /* Features */
+    .features { padding: 96px 24px; }
+    .features-inner { max-width: 1000px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; letter-spacing: -1px; margin-bottom: 12px; }
+    .section-header p { color: var(--muted); font-size: 16px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .feature-card {
+      padding: 32px; border-radius: 20px;
+      background: var(--card); border: 1px solid var(--border);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .feature-card:hover { border-color: hsl(40,15%,80%); box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--secondary); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+    }
+    .feature-icon svg { width: 24px; height: 24px; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 12px; }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* Steps */
+    .steps { padding: 96px 24px; background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps-inner { max-width: 800px; margin: 0 auto; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+    .step-num { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700; color: var(--border); line-height: 1; margin-bottom: 16px; }
+    .step h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* CTA */
+    .cta-section { padding: 96px 24px; text-align: center; }
+    .cta-inner { max-width: 560px; margin: 0 auto; }
+    .cta-inner h2 { font-size: clamp(32px, 4.5vw, 52px); font-weight: 600; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+    .cta-inner p { color: var(--muted); font-size: 17px; margin-bottom: 40px; line-height: 1.65; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; }
+    .footer-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--muted);
+    }
+    .footer-brand { display: flex; align-items: center; gap: 8px; }
+    .footer-icon {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--fg); display: flex; align-items: center; justify-content: center;
+    }
+    .footer-icon svg { width: 12px; height: 12px; color: var(--bg); }
+    .footer-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; color: var(--fg); }
+
+    @media (max-width: 720px) {
+      .feature-grid, .steps-grid { grid-template-columns: 1fr; }
+      .hero h1 { letter-spacing: -2px; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="1" width="9" height="12" rx="1.5"/>
+          <path d="M5 4h5M5 7h5M5 10h3"/>
+          <path d="M11 10l2 2 3-3" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="nav-name">Crumbli</span>
+    </div>
+    <div class="nav-actions">
+      <a href="https://main.d1no7in5unscsn.amplifyapp.com/" class="btn-ghost">Sign in</a>
+      <a href="https://main.d1no7in5unscsn.amplifyapp.com/" class="btn-pill">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Receipt Management, Simplified</p>
+    <h1>Your receipts,<br/><span>understood.</span></h1>
+    <p class="hero-sub">Snap a photo. Get structured data. Crumbli uses AI to parse your receipts into clean, organized expense records — no manual entry required.</p>
+    <div class="hero-ctas">
+      <a href="https://main.d1no7in5unscsn.amplifyapp.com/" class="btn-hero-primary">
+        Start for free
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+      <a href="https://main.d1no7in5unscsn.amplifyapp.com/" class="btn-hero-secondary">Sign in</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div></div>
+
+<section class="features">
+  <div class="features-inner">
+    <div class="section-header">
+      <h2>How it works</h2>
+      <p>Three steps. Zero spreadsheets.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>
+          </svg>
+        </div>
+        <h3>AI-Powered Parsing</h3>
+        <p>Upload a photo of any receipt and Crumbli extracts vendor, date, line items, totals, and category — in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3>Bank-Grade Security</h3>
+        <p>Your data is encrypted at rest and in transit. Fine-grained access controls keep everything locked down.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <h3>Expense Dashboard</h3>
+        <p>Filter, search, and review all your receipts in one place. Built for freelancers, small teams, and anyone who hates manual data entry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="steps-inner">
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Upload</h3>
+        <p>Take a photo or drag &amp; drop your receipt image.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Parse</h3>
+        <p>AI extracts vendor, items, totals, tax, and category.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Organize</h3>
+        <p>Review, filter, and export your expenses from one dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to ditch the shoebox?</h2>
+    <p>Join freelancers and small business owners who save hours every month on expense tracking.</p>
+    <a href="https://main.d1no7in5unscsn.amplifyapp.com/" class="btn-hero-primary">
+      Get started — it's free
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="1" width="9" height="12" rx="1.5"/>
+          <path d="M5 4h5M5 7h5M5 10h3"/>
+        </svg>
+      </div>
+      <span class="footer-name">Crumbli</span>
+    </div>
+    <span>&copy; 2026 Crumbli. Made in Canada.</span>
+  </div>
+</footer>
+
+</body>
+</html>
