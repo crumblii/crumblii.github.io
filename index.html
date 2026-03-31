@@ -3,421 +3,479 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crumbli — Follow the Trail</title>
+  <title>Crumbli — Receipt Management, Simplified</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:           hsl(48, 33%, 97%);
-      --bg-card:      hsl(0, 0%, 100%);
-      --bg-secondary: hsl(40, 20%, 94%);
-      --bg-muted:     hsl(40, 15%, 94%);
-      --fg:           hsl(0, 0%, 9%);
-      --fg-muted:     hsl(0, 0%, 45%);
-      --fg-faint:     hsl(0, 0%, 62%);
-      --border:       hsl(40, 15%, 88%);
-      --border-soft:  hsl(40, 15%, 92%);
-      --accent:       hsl(42, 65%, 55%);
-      --accent-lt:    hsl(42, 80%, 68%);
-      --accent-bg:    hsl(42, 65%, 95%);
-      --radius:       12px;
-      --radius-lg:    20px;
-      --radius-pill:  100px;
+      --bg:        hsl(48, 33%, 97%);
+      --card:      hsl(0, 0%, 100%);
+      --secondary: hsl(40, 20%, 94%);
+      --fg:        hsl(0, 0%, 9%);
+      --muted:     hsl(0, 0%, 45%);
+      --border:    hsl(40, 15%, 90%);
+      --accent:    hsl(42, 65%, 55%);
     }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, -apple-system, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    html { -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Inter', system-ui, sans-serif; font-size: 16px; line-height: 1.6; }
     a { color: inherit; text-decoration: none; }
     button { cursor: pointer; font-family: inherit; }
     h1, h2, h3, h4 { font-family: 'Playfair Display', Georgia, serif; }
-    .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
-    .section { padding: 100px 0; }
-    .section--sm { padding: 72px 0; }
 
     /* Nav */
-    nav { position: sticky; top: 0; z-index: 100; background: rgba(250,247,242,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border-soft); }
-    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-    .nav-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--fg); letter-spacing: -0.3px; }
-    .nav-links { display: flex; gap: 28px; }
-    .nav-links a { font-size: 14px; font-weight: 450; color: var(--fg-muted); transition: color .2s; }
-    .nav-links a:hover { color: var(--fg); }
-    .nav-actions { display: flex; align-items: center; gap: 20px; }
-    .nav-login { font-size: 14px; font-weight: 500; color: var(--fg-muted); transition: color .2s; }
-    .nav-login:hover { color: var(--fg); }
-    .btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--fg); color: var(--bg); font-size: 14px; font-weight: 600; padding: 9px 22px; border-radius: var(--radius-pill); border: none; transition: background .2s, transform .15s; }
-    .btn-primary:hover { background: hsl(0,0%,18%); transform: translateY(-1px); }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+      background: rgba(250,247,242,0.8); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--fg); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .nav-icon svg { width: 16px; height: 16px; color: var(--bg); }
+    .nav-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; letter-spacing: -0.2px; }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .btn-ghost { font-size: 14px; font-weight: 500; color: var(--muted); padding: 8px 16px; border: none; background: transparent; transition: color .2s; text-decoration: none; }
+    .btn-ghost:hover { color: var(--fg); }
+    .btn-pill { font-size: 14px; font-weight: 500; background: var(--fg); color: var(--bg); padding: 10px 20px; border-radius: 100px; border: none; transition: background .2s; text-decoration: none; }
+    .btn-pill:hover { background: hsl(0,0%,18%); }
 
     /* Hero */
-    .hero { padding: 112px 0 96px; text-align: center; border-bottom: 1px solid var(--border-soft); }
-    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: var(--fg-muted); background: var(--bg-secondary); border: 1px solid var(--border); padding: 5px 14px; border-radius: var(--radius-pill); margin-bottom: 32px; }
-    .hero h1 { font-size: clamp(52px,7.5vw,88px); font-weight: 600; letter-spacing: -2px; line-height: 1.04; color: var(--fg); margin-bottom: 24px; }
-    .hero h1 em { font-style: italic; color: var(--fg-muted); }
-    .hero-sub { font-size: clamp(17px,2.2vw,20px); color: var(--fg-muted); max-width: 540px; margin: 0 auto 40px; line-height: 1.6; }
-    .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 40px; }
-    .btn-hero-primary { display: inline-flex; align-items: center; background: var(--fg); color: var(--bg); font-size: 15px; font-weight: 600; padding: 14px 32px; border-radius: var(--radius-pill); border: none; transition: background .2s, transform .15s; }
-    .btn-hero-primary:hover { background: hsl(0,0%,18%); transform: translateY(-1px); }
-    .btn-hero-secondary { display: inline-flex; align-items: center; background: transparent; color: var(--fg-muted); font-size: 15px; font-weight: 500; padding: 14px 28px; border-radius: var(--radius-pill); border: 1px solid var(--border); transition: border-color .2s, color .2s, background .2s; }
-    .btn-hero-secondary:hover { border-color: hsl(40,15%,75%); color: var(--fg); background: var(--bg-secondary); }
-    .hero-proof { font-size: 13px; color: var(--fg-faint); display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .proof-dot { color: var(--border); }
+    .hero { padding: 128px 24px 80px; text-align: center; }
+    .hero-inner { max-width: 800px; margin: 0 auto; animation: slideUp .6s ease-out; }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(56px, 9vw, 96px); font-weight: 600;
+      letter-spacing: -3px; line-height: 1.02; margin-bottom: 32px;
+    }
+    .hero h1 span { color: var(--muted); }
+    .hero-sub {
+      font-size: 18px; color: var(--muted); max-width: 560px;
+      margin: 0 auto 48px; line-height: 1.65;
+    }
+    .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; animation: slideUp .6s ease-out .15s both; }
+    .btn-hero-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--fg); color: var(--bg); font-size: 15px; font-weight: 500;
+      padding: 14px 32px; border-radius: 100px; border: none; transition: background .2s;
+    }
+    .btn-hero-primary:hover { background: hsl(0,0%,18%); }
+    .btn-hero-primary svg { width: 16px; height: 16px; transition: transform .2s; }
+    .btn-hero-primary:hover svg { transform: translateX(2px); }
+    .btn-hero-secondary {
+      display: inline-flex; align-items: center;
+      background: transparent; color: var(--muted); font-size: 15px; font-weight: 500;
+      padding: 14px 32px; border-radius: 100px; border: 1px solid var(--border);
+      transition: border-color .2s, color .2s;
+    }
+    .btn-hero-secondary:hover { border-color: hsl(40,15%,72%); color: var(--fg); }
 
-    /* Trust Bar */
-    .trust-bar { padding: 40px 0; border-bottom: 1px solid var(--border-soft); }
-    .trust-label { text-align: center; font-size: 12px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 28px; }
-    .trust-logos { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
-    .trust-logo { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--border); letter-spacing: 0.3px; transition: color .2s; }
-    .trust-logo:hover { color: var(--fg-faint); }
+    /* Divider */
+    .divider { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+    .divider-line { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); }
 
-    /* Section headers */
-    .section-label { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 16px; }
-    .section-title { font-size: clamp(32px,4.5vw,52px); font-weight: 600; letter-spacing: -1.2px; line-height: 1.1; color: var(--fg); margin-bottom: 20px; }
-    .section-title em { font-style: italic; color: var(--fg-muted); }
-    .section-sub { font-size: 17px; color: var(--fg-muted); max-width: 520px; line-height: 1.65; }
-    .centered { text-align: center; }
-    .centered .section-sub { margin: 0 auto; }
+    /* Features */
+    .features { padding: 96px 24px; }
+    .features-inner { max-width: 1000px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header h2 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; letter-spacing: -1px; margin-bottom: 12px; }
+    .section-header p { color: var(--muted); font-size: 16px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .feature-card {
+      padding: 32px; border-radius: 20px;
+      background: var(--card); border: 1px solid var(--border);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .feature-card:hover { border-color: hsl(40,15%,80%); box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+    .feature-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--secondary); display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+    }
+    .feature-icon svg { width: 24px; height: 24px; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 12px; }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-    /* Problem */
-    .problem-wrap { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-card); }
-    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; }
-    .problem-col { padding: 52px 48px; }
-    .problem-col:first-child { border-right: 1px solid var(--border-soft); }
-    .problem-chip { display: inline-block; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--fg-muted); background: var(--bg-muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: var(--radius-pill); margin-bottom: 20px; }
-    .problem-col h3 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; line-height: 1.25; margin-bottom: 16px; }
-    .problem-col p { color: var(--fg-muted); line-height: 1.7; font-size: 15px; }
-    .problem-bridge { text-align: center; padding: 24px 40px; border-top: 1px solid var(--border-soft); font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500; font-style: italic; color: var(--fg-muted); background: var(--bg-secondary); }
+    /* Steps */
+    .steps { padding: 96px 24px; background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .steps-inner { max-width: 800px; margin: 0 auto; }
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; }
+    .step-num { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 700; color: var(--border); line-height: 1; margin-bottom: 16px; }
+    .step h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 8px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-    /* Feature Explorer */
-    .feature-toggle { display: flex; align-items: center; justify-content: center; gap: 3px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 4px; margin: 0 auto 52px; width: fit-content; }
-    .toggle-btn { padding: 9px 24px; border-radius: var(--radius-pill); border: none; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--fg-muted); background: transparent; transition: all .2s; }
-    .toggle-btn.active { background: var(--fg); color: var(--bg); }
-    .feature-panel { display: none; }
-    .feature-panel.active { display: block; }
-    .feature-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
-    .feature-tab { padding: 14px 24px; border: none; border-bottom: 2px solid transparent; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; color: var(--fg-muted); background: transparent; margin-bottom: -1px; transition: color .2s, border-color .2s; white-space: nowrap; }
-    .feature-tab.active { color: var(--fg); border-bottom-color: var(--fg); }
-    .feature-tab:hover:not(.active) { color: var(--fg); }
-    .feature-content { display: none; }
-    .feature-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
-    .feature-text h4 { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 16px; }
-    .feature-text p { color: var(--fg-muted); font-size: 17px; line-height: 1.7; }
-    .feature-visual { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); height: 280px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-    .feature-visual-inner { display: flex; flex-direction: column; gap: 10px; padding: 32px; width: 100%; }
-    .mock-row { height: 13px; border-radius: 6px; background: var(--bg-secondary); }
-    .mock-row.accent { background: hsl(42,65%,88%); width: 55%; }
-    .mock-row.short { width: 35%; }
-    .mock-row.medium { width: 65%; }
-    .mock-row.long { width: 88%; }
-
-    /* How it works */
-    .steps-wrap { margin-top: 60px; display: grid; grid-template-columns: repeat(3,1fr); gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-card); }
-    .step { padding: 44px 40px; }
-    .step:not(:last-child) { border-right: 1px solid var(--border-soft); }
-    .step-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 400; font-style: italic; color: var(--border); line-height: 1; margin-bottom: 24px; }
-    .step h4 { font-size: 19px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 12px; }
-    .step p { color: var(--fg-muted); font-size: 14px; line-height: 1.7; }
-
-    /* Modules */
-    .modules-wrap { margin-top: 60px; display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-card); }
-    .module-card { padding: 36px; border-right: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); transition: background .2s; }
-    .module-card:hover { background: var(--bg-secondary); }
-    .module-card:nth-child(3n) { border-right: none; }
-    .module-card:nth-last-child(-n+3) { border-bottom: none; }
-    .module-icon { font-size: 22px; margin-bottom: 18px; }
-    .module-card h4 { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 8px; }
-    .badge { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--fg-faint); border: 1px solid var(--border); padding: 2px 7px; border-radius: var(--radius-pill); }
-    .module-card p { color: var(--fg-muted); font-size: 14px; line-height: 1.65; }
-
-    /* Sizes */
-    .sizes-wrap { margin-top: 60px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-    .size-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; transition: border-color .25s, transform .25s; }
-    .size-card:hover { border-color: hsl(40,15%,74%); transform: translateY(-3px); }
-    .size-band { font-family: 'Inter', sans-serif; display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--fg-faint); background: var(--bg-muted); border: 1px solid var(--border); padding: 4px 12px; border-radius: var(--radius-pill); margin-bottom: 22px; }
-    .size-card h4 { font-size: 16px; font-weight: 500; font-style: italic; color: var(--fg-muted); margin-bottom: 12px; line-height: 1.4; }
-    .size-card p { color: var(--fg-muted); font-size: 14px; line-height: 1.7; }
-
-    /* Firms band */
-    .firms-band { background: var(--fg); color: var(--bg); }
-    .firms-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-    .firms-text .section-label { color: rgba(250,247,242,0.4); }
-    .firms-text h2 { font-size: clamp(28px,4vw,44px); font-weight: 600; letter-spacing: -1px; line-height: 1.15; color: var(--bg); margin-bottom: 16px; }
-    .firms-text p { color: rgba(250,247,242,0.65); line-height: 1.7; margin-bottom: 32px; }
-    .btn-outline-light { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(250,247,242,0.25); color: var(--bg); padding: 12px 24px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 600; background: transparent; transition: background .2s, border-color .2s; }
-    .btn-outline-light:hover { background: rgba(250,247,242,0.1); border-color: rgba(250,247,242,0.45); }
-    .firms-stats { display: flex; flex-direction: column; gap: 12px; }
-    .firms-stat { display: flex; align-items: center; gap: 16px; padding: 18px 22px; background: rgba(250,247,242,0.06); border: 1px solid rgba(250,247,242,0.12); border-radius: var(--radius); }
-    .stat-arrow { color: rgba(250,247,242,0.4); font-size: 14px; font-weight: 700; flex-shrink: 0; }
-    .firms-stat span { color: rgba(250,247,242,0.85); font-size: 15px; font-weight: 400; }
-
-    /* Testimonials */
-    .testimonials-wrap { margin-top: 60px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-    .testimonial { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; }
-    .quote-mark { font-family: 'Playfair Display', serif; font-size: 56px; line-height: 0.8; color: var(--border); margin-bottom: 16px; display: block; }
-    .testimonial p { font-size: 16px; line-height: 1.7; color: var(--fg); margin-bottom: 24px; }
-    .author { display: flex; align-items: center; gap: 12px; }
-    .author-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border); flex-shrink: 0; }
-    .author-name { font-size: 14px; font-weight: 600; color: var(--fg); }
-    .author-role { font-size: 12px; color: var(--fg-faint); margin-top: 2px; }
-
-    /* Integrations */
-    .integrations-section { background: var(--bg-card); border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
-    .integrations-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 48px; }
-    .chip { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 9px 18px; font-size: 13px; font-weight: 500; color: var(--fg-muted); transition: border-color .2s, color .2s, background .2s; }
-    .chip:hover { border-color: hsl(40,15%,76%); color: var(--fg); background: var(--bg-secondary); }
-    .integrations-more { text-align: center; margin-top: 20px; font-size: 13px; color: var(--fg-faint); font-weight: 500; }
-
-    /* Pricing */
-    .pricing-wrap { margin-top: 60px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-    .pricing-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; position: relative; transition: transform .2s; }
-    .pricing-card:hover { transform: translateY(-3px); }
-    .pricing-card.featured { border-color: var(--fg); }
-    .featured-label { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--fg); color: var(--bg); font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 14px; border-radius: var(--radius-pill); }
-    .pricing-tier { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
-    .pricing-desc { color: var(--fg-muted); font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
-    .pricing-btn { width: 100%; padding: 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: transparent; color: var(--fg); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; transition: all .2s; }
-    .pricing-btn:hover { background: var(--bg-secondary); border-color: hsl(40,15%,76%); }
-    .pricing-card.featured .pricing-btn { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-    .pricing-card.featured .pricing-btn:hover { background: hsl(0,0%,18%); }
-    .pricing-note { text-align: center; margin-top: 18px; font-size: 13px; color: var(--fg-faint); }
-
-    /* Bottom CTA */
-    .bottom-cta { text-align: center; padding: 120px 0; border-top: 1px solid var(--border-soft); }
-    .bottom-cta h2 { font-size: clamp(36px,5.5vw,64px); font-weight: 600; letter-spacing: -2px; line-height: 1.1; margin-bottom: 16px; }
-    .bottom-cta h2 em { font-style: italic; color: var(--fg-muted); }
-    .bottom-cta p { color: var(--fg-muted); font-size: 18px; max-width: 460px; margin: 0 auto 40px; }
-    .bottom-paths { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 24px; }
-    .path-link { font-size: 14px; font-weight: 500; color: var(--fg-muted); display: flex; align-items: center; gap: 4px; border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
-    .path-link:hover { color: var(--fg); border-bottom-color: var(--fg); }
+    /* CTA */
+    .cta-section { padding: 96px 24px; text-align: center; }
+    .cta-inner { max-width: 560px; margin: 0 auto; }
+    .cta-inner h2 { font-size: clamp(32px, 4.5vw, 52px); font-weight: 600; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+    .cta-inner p { color: var(--muted); font-size: 17px; margin-bottom: 40px; line-height: 1.65; }
 
     /* Footer */
-    footer { background: var(--fg); color: var(--bg); padding: 60px 0 36px; }
-    .footer-top { display: grid; grid-template-columns: 1.8fr repeat(4,1fr); gap: 40px; margin-bottom: 52px; }
-    .footer-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; color: var(--bg); margin-bottom: 10px; display: block; }
-    .footer-tagline { font-size: 14px; color: rgba(250,247,242,0.45); }
-    .footer-col h5 { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(250,247,242,0.4); margin-bottom: 16px; }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
-    .footer-col li a { font-size: 14px; color: rgba(250,247,242,0.65); transition: color .2s; }
-    .footer-col li a:hover { color: var(--bg); }
-    .footer-bottom { border-top: 1px solid rgba(250,247,242,0.1); padding-top: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: rgba(250,247,242,0.35); }
-
-    @media (max-width: 920px) {
-      .nav-links { display: none; }
-      .problem-grid, .firms-inner, .steps-wrap { grid-template-columns: 1fr; }
-      .problem-col:first-child { border-right: none; border-bottom: 1px solid var(--border-soft); }
-      .step:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border-soft); }
-      .feature-content.active { grid-template-columns: 1fr; }
-      .modules-wrap { grid-template-columns: 1fr; }
-      .module-card { border-right: none !important; }
-      .sizes-wrap, .testimonials-wrap, .pricing-wrap { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
-      .footer-brand { grid-column: 1 / -1; }
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; }
+    .footer-inner {
+      max-width: 1120px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--muted);
     }
+    .footer-brand { display: flex; align-items: center; gap: 8px; }
+    .footer-icon {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: var(--fg); display: flex; align-items: center; justify-content: center;
+    }
+    .footer-icon svg { width: 12px; height: 12px; color: var(--bg); }
+    .footer-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; color: var(--fg); }
+
+    @media (max-width: 720px) {
+      .feature-grid, .steps-grid { grid-template-columns: 1fr; }
+      .hero h1 { letter-spacing: -2px; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Auth Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .modal-backdrop.open { display: flex; animation: fadeIn .15s ease-out; }
+    .modal {
+      background: var(--card); border-radius: 16px; width: 100%; max-width: 400px;
+      padding: 32px; position: relative; animation: slideUp .2s ease-out;
+      box-shadow: 0 24px 64px rgba(0,0,0,.18);
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 28px; height: 28px; border-radius: 50%; border: none;
+      background: var(--secondary); color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; line-height: 1; transition: background .15s;
+    }
+    .modal-close:hover { background: var(--border); }
+    .modal-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .modal-tab {
+      flex: 1; padding: 12px; text-align: center; font-size: 15px; font-weight: 500;
+      border: none; background: transparent; color: var(--muted);
+      border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s;
+    }
+    .modal-tab.active { color: var(--fg); border-bottom-color: var(--fg); }
+    .modal-form { display: none; }
+    .modal-form.active { display: block; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--fg); }
+    .form-group input {
+      width: 100%; padding: 11px 14px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--bg);
+      font-family: inherit; font-size: 14px; color: var(--fg);
+      transition: border-color .15s, box-shadow .15s; outline: none;
+    }
+    .form-group input::placeholder { color: var(--muted); }
+    .form-group input:focus { border-color: hsl(40,15%,70%); box-shadow: 0 0 0 3px rgba(180,155,100,.12); }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 44px; }
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      border: none; background: transparent; color: var(--muted); padding: 4px;
+      display: flex; align-items: center; transition: color .15s;
+    }
+    .pw-toggle:hover { color: var(--fg); }
+    .pw-toggle svg { width: 18px; height: 18px; }
+    .btn-submit {
+      width: 100%; padding: 13px; border-radius: 100px; border: none;
+      background: var(--fg); color: var(--bg); font-family: inherit;
+      font-size: 15px; font-weight: 500; margin-top: 8px;
+      transition: background .2s;
+    }
+    .btn-submit:hover { background: hsl(0,0%,18%); }
+    .btn-submit:disabled { opacity: .6; cursor: default; }
+    .modal-footer-link {
+      display: block; text-align: center; margin-top: 16px;
+      font-size: 13px; color: hsl(210,70%,50%); text-decoration: underline;
+    }
+    .modal-error {
+      display: none; background: hsl(0,75%,96%); border: 1px solid hsl(0,75%,88%);
+      color: hsl(0,65%,45%); border-radius: 8px; padding: 10px 14px;
+      font-size: 13px; margin-bottom: 16px;
+    }
+    .modal-error.show { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
 
 <nav>
-  <div class="container">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo">Crumbli</a>
-      <div class="nav-links">
-        <a href="#platform">Platform</a>
-        <a href="#firms">For Firms</a>
-        <a href="#businesses">For Businesses</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#">Blog</a>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <div class="nav-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="1" width="9" height="12" rx="1.5"/>
+          <path d="M5 4h5M5 7h5M5 10h3"/>
+          <path d="M11 10l2 2 3-3" stroke-width="1.5"/>
+        </svg>
       </div>
-      <div class="nav-actions">
-        <a href="#" class="nav-login">Log In</a>
-        <button class="btn-primary">Start Free</button>
-      </div>
+      <span class="nav-name">Crumbli</span>
+    </div>
+    <div class="nav-actions">
+      <button onclick="openModal('signin')" class="btn-ghost">Sign in</button>
+      <button onclick="openModal('signup')" class="btn-pill">Get started</button>
     </div>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="container">
-    <div class="hero-eyebrow">For accounting firms and the businesses they serve</div>
-    <h1>Every business<br/><em>leaves crumbs.</em></h1>
-    <p class="hero-sub">Crumbli follows the trail — turning scattered receipts, invoices, and financial data into clean books, clear reports, and hours back every week.</p>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Receipt Management, Simplified</p>
+    <h1>Your receipts,<br/><span>understood.</span></h1>
+    <p class="hero-sub">Snap a photo. Get structured data. Crumbli uses AI to parse your receipts into clean, organized expense records — no manual entry required.</p>
     <div class="hero-ctas">
-      <button class="btn-hero-primary">Start Free — no credit card required</button>
-      <button class="btn-hero-secondary">See how it works ↓</button>
+      <button onclick="openModal('signup')" class="btn-hero-primary">
+        Start for free
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+      <button onclick="openModal('signin')" class="btn-hero-secondary">Sign in</button>
     </div>
-    <p class="hero-proof">
-      <span>Trusted by accounting firms across Canada</span>
-      <span class="proof-dot">·</span>
-      <span>Syncs with QuickBooks &amp; Xero</span>
-    </p>
   </div>
 </section>
 
-<div class="trust-bar">
-  <div class="container">
-    <p class="trust-label">Integrations coming soon</p>
-    <div class="trust-logos">
-      <span class="trust-logo">QuickBooks</span>
-      <span class="trust-logo">Xero</span>
-      <span class="trust-logo">Stripe</span>
-      <span class="trust-logo">Google Drive</span>
-      <span class="trust-logo">Dropbox</span>
-      <span class="trust-logo">Gmail</span>
-      <span class="trust-logo">Bank Feeds</span>
-    </div>
-  </div>
-</div>
+<div class="divider"><div class="divider-line"></div></div>
 
-<section class="section" id="businesses">
-  <div class="container">
-    <div class="problem-wrap">
-      <div class="problem-grid">
-        <div class="problem-col">
-          <span class="problem-chip">For firms</span>
-          <h3>Your clients send chaos.</h3>
-          <p>Inconsistent formats. Late receipts. Spreadsheets, photos, PDFs, bank exports. Different software for every client. You spend more time untangling data than doing actual accounting.</p>
+<section class="features">
+  <div class="features-inner">
+    <div class="section-header">
+      <h2>How it works</h2>
+      <p>Three steps. Zero spreadsheets.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>
+          </svg>
         </div>
-        <div class="problem-col">
-          <span class="problem-chip">For businesses</span>
-          <h3>Your finances are everywhere.</h3>
-          <p>Five tools. Two spreadsheets. A folder of receipts you meant to deal with last month. No one person has time for all of it — and hiring a full finance team feels like overkill.</p>
+        <h3>AI-Powered Parsing</h3>
+        <p>Upload a photo of any receipt and Crumbli extracts vendor, date, line items, totals, and category — in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
         </div>
+        <h3>Bank-Grade Security</h3>
+        <p>Your data is encrypted at rest and in transit. Fine-grained access controls keep everything locked down.</p>
       </div>
-      <div class="problem-bridge">Crumbli connects to both sides of the mess.</div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="platform" style="border-top: 1px solid var(--border-soft);">
-  <div class="container">
-    <div class="centered" style="margin-bottom: 48px;">
-      <p class="section-label">Platform</p>
-      <h2 class="section-title">Built for <em>both sides</em> of the table.</h2>
-    </div>
-    <div class="feature-toggle">
-      <button class="toggle-btn active" onclick="switchToggle(this,'firms-panel')">For Accounting Firms</button>
-      <button class="toggle-btn" onclick="switchToggle(this,'biz-panel')">For My Business</button>
-    </div>
-    <div class="feature-panel active" id="firms-panel">
-      <div class="feature-tabs">
-        <button class="feature-tab active" onclick="switchTab(this,'f',0)">Ingest</button>
-        <button class="feature-tab" onclick="switchTab(this,'f',1)">Normalize</button>
-        <button class="feature-tab" onclick="switchTab(this,'f',2)">Process</button>
-        <button class="feature-tab" onclick="switchTab(this,'f',3)">Deliver</button>
-      </div>
-      <div class="feature-content active" id="f-0"><div class="feature-text"><h4>Ingest anything.</h4><p>Connect any client data source — bank feeds, accounting software, receipt photos, CSV exports, spreadsheets. However they send it, Crumbli takes it.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row accent"></div><div class="mock-row medium"></div><div class="mock-row long"></div><div class="mock-row short"></div><div class="mock-row accent" style="width:65%"></div><div class="mock-row medium"></div></div></div></div>
-      <div class="feature-content" id="f-1"><div class="feature-text"><h4>Chaos in. Structure out.</h4><p>Whatever came in as chaos comes out as structure. One uniform format across every client, regardless of how inconsistent the input.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row long"></div><div class="mock-row accent" style="width:80%"></div><div class="mock-row medium"></div><div class="mock-row accent" style="width:55%"></div><div class="mock-row short"></div><div class="mock-row long"></div></div></div></div>
-      <div class="feature-content" id="f-2"><div class="feature-text"><h4>Automated across every client.</h4><p>Automated categorization, reconciliation, and month-end close — running across your entire client base, simultaneously.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row medium"></div><div class="mock-row accent" style="width:70%"></div><div class="mock-row long"></div><div class="mock-row short"></div><div class="mock-row accent" style="width:48%"></div><div class="mock-row medium"></div></div></div></div>
-      <div class="feature-content" id="f-3"><div class="feature-text"><h4>Deliver from one dashboard.</h4><p>Clean financials, CRA-ready reports, and client-ready documentation — generated from one dashboard. Not assembled from five.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row accent" style="width:90%"></div><div class="mock-row short"></div><div class="mock-row medium"></div><div class="mock-row accent" style="width:58%"></div><div class="mock-row long"></div><div class="mock-row medium"></div></div></div></div>
-    </div>
-    <div class="feature-panel" id="biz-panel">
-      <div class="feature-tabs">
-        <button class="feature-tab active" onclick="switchTab(this,'b',0)">Expenses</button>
-        <button class="feature-tab" onclick="switchTab(this,'b',1)">Books</button>
-        <button class="feature-tab" onclick="switchTab(this,'b',2)">Cash Flow</button>
-        <button class="feature-tab" onclick="switchTab(this,'b',3)">Reports</button>
-      </div>
-      <div class="feature-content active" id="b-0"><div class="feature-text"><h4>Nothing manual.</h4><p>Snap a receipt. Upload a PDF. Forward an email. Crumbli reads it, extracts every line item, and files it. Nothing manual.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row accent"></div><div class="mock-row long"></div><div class="mock-row medium"></div><div class="mock-row accent" style="width:45%"></div><div class="mock-row short"></div><div class="mock-row long"></div></div></div></div>
-      <div class="feature-content" id="b-1"><div class="feature-text"><h4>Books that stay current.</h4><p>Transactions categorized, reconciled, and closed — automatically. Your books are current without you touching them.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row medium"></div><div class="mock-row accent" style="width:75%"></div><div class="mock-row long"></div><div class="mock-row short"></div><div class="mock-row accent" style="width:60%"></div><div class="mock-row medium"></div></div></div></div>
-      <div class="feature-content" id="b-2"><div class="feature-text"><h4>Know what's next.</h4><p>See what's coming in, what's going out, and what's coming next. 30, 60, 90 days out — without building a spreadsheet.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row accent" style="width:85%"></div><div class="mock-row long"></div><div class="mock-row accent" style="width:50%"></div><div class="mock-row medium"></div><div class="mock-row long"></div><div class="mock-row short"></div></div></div></div>
-      <div class="feature-content" id="b-3"><div class="feature-text"><h4>Generated, not built.</h4><p>Month-end summaries. GST/HST prep. Spend breakdowns. Generated, not built. Ready when you need them.</p></div><div class="feature-visual"><div class="feature-visual-inner"><div class="mock-row long"></div><div class="mock-row accent" style="width:65%"></div><div class="mock-row medium"></div><div class="mock-row accent" style="width:80%"></div><div class="mock-row short"></div><div class="mock-row long"></div></div></div></div>
-    </div>
-  </div>
-</section>
-
-<section class="section--sm" style="background:var(--bg-card);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
-  <div class="container">
-    <div class="centered"><p class="section-label">How it works</p><h2 class="section-title">Three steps.<br/><em>No spreadsheets.</em></h2></div>
-    <div class="steps-wrap">
-      <div class="step"><div class="step-num">01</div><h4>Connect the chaos</h4><p>Any format. Any source. Bank feeds, software exports, receipt photos, CSVs. If it has financial data in it, Crumbli can read it.</p></div>
-      <div class="step"><div class="step-num">02</div><h4>Crumbli follows the trail</h4><p>AI normalizes, categorizes, reconciles, and flags only what actually needs your attention. The routine stuff runs itself.</p></div>
-      <div class="step"><div class="step-num">03</div><h4>Clean financials, every time</h4><p>Approve what needs reviewing. Sync to QuickBooks or Xero. Deliver to your client — or keep it for yourself.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="centered"><p class="section-label">Platform modules</p><h2 class="section-title">One platform. Your entire<br/><em>financial operation.</em></h2></div>
-    <div class="modules-wrap">
-      <div class="module-card"><div class="module-icon">🧾</div><h4>Expense Management</h4><p>Receipts in. Structured data out. Approval queues, auto-approval rules, and confidence scoring — so nothing slips through.</p></div>
-      <div class="module-card"><div class="module-icon">📒</div><h4>Bookkeeping</h4><p>Categorized, reconciled, and closed. Without the back-and-forth or the manual re-entry.</p></div>
-      <div class="module-card"><div class="module-icon">📄</div><h4>Invoicing <span class="badge">Soon</span></h4><p>Create, send, track, and sync invoices to your books automatically. No double entry.</p></div>
-      <div class="module-card"><div class="module-icon">👥</div><h4>Payroll <span class="badge">Soon</span></h4><p>Pay your people right, with full CRA compliance — CPP, EI, income tax — built in from the start.</p></div>
-      <div class="module-card"><div class="module-icon">💸</div><h4>Cash Flow <span class="badge">Soon</span></h4><p>Know what's coming in, what's going out, and what's coming next. Burn rate. Runway. No surprises.</p></div>
-      <div class="module-card"><div class="module-icon">📊</div><h4>Spend Analytics <span class="badge">Soon</span></h4><p>See the patterns your spreadsheets never showed you. Category trends, anomaly alerts, and budget vs. actual — automatically surfaced.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section--sm" style="background:var(--bg-card);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);">
-  <div class="container">
-    <div class="centered"><p class="section-label">Built for every size</p><h2 class="section-title">Crumbli <em>scales with you.</em></h2></div>
-    <div class="sizes-wrap">
-      <div class="size-card"><span class="size-band">1–10 people</span><h4>Your first finance hire is an AI.</h4><p>Get clean books, processed expenses, and GST/HST prep — without hiring a bookkeeper. Crumbli does it for a fraction of the cost.</p></div>
-      <div class="size-card"><span class="size-band">1–50 people</span><h4>You've outgrown the spreadsheet.</h4><p>Crumbli runs your back office — expenses, books, invoicing, and cash flow visibility — so your team can focus on the business, not the admin.</p></div>
-      <div class="size-card"><span class="size-band">50–250 people</span><h4>CFO-level visibility. Without the CFO-level salary.</h4><p>Department-level reporting, multi-user access, audit trails, and full financial operations — all from one platform.</p></div>
-    </div>
-  </div>
-</section>
-
-<section class="section firms-band" id="firms">
-  <div class="container">
-    <div class="firms-inner">
-      <div class="firms-text">
-        <p class="section-label">For accounting firms</p>
-        <h2>Built for the firms that run everyone else's numbers.</h2>
-        <p>Your clients send data in every format imaginable. Crumbli ingests it all, normalizes it, and gives your team one platform to process, review, and deliver — across every client, uniformly.</p>
-        <button class="btn-outline-light">Book a demo for your firm →</button>
-      </div>
-      <div class="firms-stats">
-        <div class="firms-stat"><span class="stat-arrow">→</span><span>100s of hours saved per firm, per month</span></div>
-        <div class="firms-stat"><span class="stat-arrow">→</span><span>Works across all client types and sizes</span></div>
-        <div class="firms-stat"><span class="stat-arrow">→</span><span>One dashboard for every client you manage</span></div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <h3>Expense Dashboard</h3>
+        <p>Filter, search, and review all your receipts in one place. Built for freelancers, small teams, and anyone who hates manual data entry.</p>
       </div>
     </div>
   </div>
 </section>
 
-
-<section class="bottom-cta">
-  <div class="container">
-    <h2>Ready to follow<br/><em>the trail?</em></h2>
-    <p>Every business leaves crumbs. Crumbli makes sure none of them get lost.</p>
-    <button class="btn-hero-primary">Start Free — no credit card required</button>
-    <div class="bottom-paths">
-      <a href="#" class="path-link">I'm an accounting firm →</a>
-      <a href="#" class="path-link">I'm a business →</a>
+<section class="steps">
+  <div class="steps-inner">
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Upload</h3>
+        <p>Take a photo or drag &amp; drop your receipt image.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Parse</h3>
+        <p>AI extracts vendor, items, totals, tax, and category.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Organize</h3>
+        <p>Review, filter, and export your expenses from one dashboard.</p>
+      </div>
     </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to ditch the shoebox?</h2>
+    <p>Join freelancers and small business owners who save hours every month on expense tracking.</p>
+    <button onclick="openModal('signup')" class="btn-hero-primary">
+      Get started — it's free
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+    </button>
   </div>
 </section>
 
 <footer>
-  <div class="container">
-    <div class="footer-top" style="display:block;text-align:center;padding:48px 0 32px;">
-      <span class="footer-logo" style="display:block;margin-bottom:12px;">Crumbli</span>
-      <p style="color:var(--fg-muted);font-size:17px;margin-bottom:28px;">Crumbli is coming soon — sign up to try our beta receipt tracker today.</p>
-      <button class="btn-hero-primary" onclick="openModal('signup')">Join the Beta</button>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-icon">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="1" width="9" height="12" rx="1.5"/>
+          <path d="M5 4h5M5 7h5M5 10h3"/>
+        </svg>
+      </div>
+      <span class="footer-name">Crumbli</span>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 Crumbli · Made in Canada 🇨🇦</span>
-    </div>
+    <span>&copy; 2026 Crumbli. Made in Canada.</span>
   </div>
 </footer>
 
+<!-- Auth Modal -->
+<div class="modal-backdrop" id="authModal" onclick="handleBackdropClick(event)">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">&#x2715;</button>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="modal-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <div class="modal-form active" id="form-signin">
+      <div class="modal-error" id="error-signin"></div>
+      <div class="form-group">
+        <label for="signin-email">Email</label>
+        <input type="email" id="signin-email" placeholder="Enter your Email" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="signin-password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="signin-password" placeholder="Enter your Password" autocomplete="current-password" />
+          <button type="button" class="pw-toggle" onclick="togglePw('signin-password', this)" aria-label="Show password">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-submit" id="btn-signin" onclick="handleSignIn()">Sign in</button>
+      <a href="#" class="modal-footer-link" onclick="handleForgotPassword(event)">Forgot your password?</a>
+    </div>
+
+    <!-- Create Account Form -->
+    <div class="modal-form" id="form-signup">
+      <div class="modal-error" id="error-signup"></div>
+      <div class="form-group">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" placeholder="Enter your Email" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="signup-password">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="signup-password" placeholder="Enter your Password" autocomplete="new-password" />
+          <button type="button" class="pw-toggle" onclick="togglePw('signup-password', this)" aria-label="Show password">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn-submit" id="btn-signup" onclick="handleSignUp()">Create account</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  function switchToggle(btn, panelId) {
-    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.feature-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(panelId).classList.add('active');
+  const APP_URL = 'https://app.crumbli.tech/';
+
+  // ── Modal open/close ──────────────────────────────────────────────
+  function openModal(tab) {
+    switchTab(tab || 'signin');
+    document.getElementById('authModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Focus first input after transition
+    setTimeout(() => {
+      const activeForm = document.querySelector('.modal-form.active');
+      if (activeForm) activeForm.querySelector('input')?.focus();
+    }, 50);
   }
-  function switchTab(btn, prefix, idx) {
-    var panel = btn.closest('.feature-panel');
-    panel.querySelectorAll('.feature-tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    panel.querySelectorAll('.feature-content').forEach(c => c.classList.remove('active'));
-    document.getElementById(prefix + '-' + idx).classList.add('active');
+
+  function closeModal() {
+    document.getElementById('authModal').classList.remove('open');
+    document.body.style.overflow = '';
+    clearErrors();
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target === document.getElementById('authModal')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ── Tab switching ─────────────────────────────────────────────────
+  function switchTab(tab) {
+    ['signin', 'signup'].forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+      document.getElementById('form-' + t).classList.toggle('active', t === tab);
+    });
+    clearErrors();
+  }
+
+  // ── Password visibility toggle ────────────────────────────────────
+  function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.querySelector('svg').style.opacity = show ? '0.5' : '1';
+  }
+
+  // ── Error display ─────────────────────────────────────────────────
+  function showError(form, msg) {
+    const el = document.getElementById('error-' + form);
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.modal-error').forEach(el => el.classList.remove('show'));
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.textContent = loading
+      ? (btnId === 'btn-signin' ? 'Signing in…' : 'Creating account…')
+      : (btnId === 'btn-signin' ? 'Sign in' : 'Create account');
+  }
+
+  // ── Auth handlers — redirect to app (swap for Cognito calls if same-domain) ──
+  function handleSignIn() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    if (!email || !password) { showError('signin', 'Please enter your email and password.'); return; }
+    setLoading('btn-signin', true);
+    // Redirect to app — the app will handle authentication
+    window.location.href = APP_URL;
+  }
+
+  function handleSignUp() {
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!email || !password) { showError('signup', 'Please enter your email and password.'); return; }
+    setLoading('btn-signup', true);
+    window.location.href = APP_URL;
+  }
+
+  function handleForgotPassword(e) {
+    e.preventDefault();
+    window.location.href = APP_URL;
   }
 </script>
+
 </body>
 </html>
