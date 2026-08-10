@@ -2,6 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!--
+    Suppress benign in-app-browser noise error. Meta's Facebook/Instagram
+    Android WebView injects a native "navigation performance logger" bridge
+    into every page and later disposes it while page JS still references it,
+    which throws: "Error invoking postMessage: Java object is gone".
+    This is not caused by this site and has no root-cause fix from our side,
+    so we filter only this specific message and let all real errors through.
+  -->
+  <script>
+    (function () {
+      var IAB_NOISE = /Java object is gone|Error invoking postMessage/i;
+      window.addEventListener('error', function (e) {
+        if (e && IAB_NOISE.test(e.message || '')) {
+          e.preventDefault();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) {
+        var reason = e && e.reason && (e.reason.message || String(e.reason));
+        if (reason && IAB_NOISE.test(reason)) e.preventDefault();
+      });
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crumbli — Follow the Trail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
